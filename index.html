@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caffeine Freedom Tracker</title>
+    <link rel="stylesheet" href="index.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo">
+                <i class="fas fa-leaf"></i>
+                <h1>Caffeine Freedom</h1>
+            </div>
+            <div class="streak-display">
+                <span class="streak-number" id="streakCounter">0</span>
+                <span class="streak-label">days caffeine-free</span>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <!-- Progress Section -->
+            <section class="progress-section">
+                <div class="progress-card">
+                    <h2>Your Journey</h2>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <p class="progress-text" id="progressText">Keep going strong!</p>
+                </div>
+            </section>
+
+            <!-- Action Buttons -->
+            <section class="action-section">
+                <button class="btn btn-success" id="successBtn">
+                    <i class="fas fa-check"></i>
+                    I stayed caffeine-free today!
+                </button>
+                <button class="btn btn-warning" id="slipBtn">
+                    <i class="fas fa-undo"></i>
+                    I had caffeine today
+                </button>
+            </section>
+
+            <!-- Alternatives Section -->
+            <section class="alternatives-section">
+                <h2>Healthy Alternatives</h2>
+                <div class="alternatives-grid" id="alternativesGrid">
+                    <div class="alternative-card" data-alternative="herbal-tea">
+                        <i class="fas fa-leaf"></i>
+                        <h3>Herbal Tea</h3>
+                        <p>Chamomile, peppermint, or ginger tea for relaxation</p>
+                    </div>
+                    <div class="alternative-card" data-alternative="water">
+                        <i class="fas fa-tint"></i>
+                        <h3>Hydration</h3>
+                        <p>Cold water with lemon or cucumber for energy</p>
+                    </div>
+                    <div class="alternative-card" data-alternative="exercise">
+                        <i class="fas fa-dumbbell"></i>
+                        <h3>Quick Exercise</h3>
+                        <p>5-minute walk or stretching for natural energy</p>
+                    </div>
+                    <div class="alternative-card" data-alternative="meditation">
+                        <i class="fas fa-om"></i>
+                        <h3>Meditation</h3>
+                        <p>Deep breathing or mindfulness for mental clarity</p>
+                    </div>
+                    <div class="alternative-card" data-alternative="fruit">
+                        <i class="fas fa-apple-alt"></i>
+                        <h3>Fresh Fruit</h3>
+                        <p>Natural sugars from apples or berries for energy</p>
+                    </div>
+                    <div class="alternative-card" data-alternative="nap">
+                        <i class="fas fa-bed"></i>
+                        <h3>Power Nap</h3>
+                        <p>15-20 minute rest to recharge naturally</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Achievements Section -->
+            <section class="achievements-section">
+                <h2>Achievements</h2>
+                <div class="achievements-grid" id="achievementsGrid">
+                    <div class="achievement locked" data-achievement="first-day">
+                        <i class="fas fa-star"></i>
+                        <h3>First Step</h3>
+                        <p>1 day caffeine-free</p>
+                    </div>
+                    <div class="achievement locked" data-achievement="three-days">
+                        <i class="fas fa-fire"></i>
+                        <h3>Building Momentum</h3>
+                        <p>3 days caffeine-free</p>
+                    </div>
+                    <div class="achievement locked" data-achievement="one-week">
+                        <i class="fas fa-trophy"></i>
+                        <h3>Week Warrior</h3>
+                        <p>7 days caffeine-free</p>
+                    </div>
+                    <div class="achievement locked" data-achievement="two-weeks">
+                        <i class="fas fa-medal"></i>
+                        <h3>Fortnight Fighter</h3>
+                        <p>14 days caffeine-free</p>
+                    </div>
+                    <div class="achievement locked" data-achievement="one-month">
+                        <i class="fas fa-crown"></i>
+                        <h3>Monthly Master</h3>
+                        <p>30 days caffeine-free</p>
+                    </div>
+                    <div class="achievement locked" data-achievement="three-months">
+                        <i class="fas fa-gem"></i>
+                        <h3>Quarterly Champion</h3>
+                        <p>90 days caffeine-free</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tips Section -->
+            <section class="tips-section">
+                <h2>Daily Motivation</h2>
+                <div class="tip-card">
+                    <i class="fas fa-lightbulb"></i>
+                    <p id="dailyTip">Remember: Each day without caffeine is an investment in your natural energy and better sleep!</p>
+                </div>
+            </section>
+        </main>
+
+        <!-- Statistics Modal -->
+        <div class="modal" id="statsModal">
+            <div class="modal-content">
+                <span class="close" id="closeModal">&times;</span>
+                <h2>Your Statistics</h2>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <h3 id="totalDays">0</h3>
+                        <p>Total Days Tracked</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3 id="successRate">0%</h3>
+                        <p>Success Rate</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3 id="longestStreak">0</h3>
+                        <p>Longest Streak</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3 id="achievementsCount">0</h3>
+                        <p>Achievements Earned</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Button -->
+        <button class="stats-btn" id="statsBtn">
+            <i class="fas fa-chart-bar"></i>
+        </button>
+
+        <!-- Reset Button -->
+        <button class="reset-btn" id="resetBtn">
+            <i class="fas fa-refresh"></i>
+        </button>
+    </div>
+
+    <script src="index.js"></script>
+</body>
+</html>
