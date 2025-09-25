@@ -1,45 +1,47 @@
-// Enhanced ClearCup with SimplyStrips Animations and Caffeine Tracking
-class CaffeineTracker {
+// Enhanced ClearCup with Custom Goal Tracking
+class CaffeineGoalTracker {
     constructor() {
+        // Goal settings
+        this.goalType = 'quit'; // 'quit' or 'reduction'
+        this.dailyLimit = 0; // mg per day
+        
+        // Tracking data
         this.streak = 0;
         this.totalDays = 0;
-        this.successfulDays = 0;
+        this.goalSuccessDays = 0; // Days where goal was met
+        this.zeroCaffeineDays = 0; // Days with 0mg caffeine
         this.longestStreak = 0;
         this.achievements = [];
         this.lastUpdateDate = null;
         
-        // New caffeine tracking properties
+        // Daily caffeine tracking
         this.todayCaffeine = 0;
         this.todayCaffeineItems = [];
         this.lastCaffeineDate = null;
         this.totalCaffeineConsumed = 0;
         
+        // Tips for motivation
         this.tips = [
-            "Remember: Each day without caffeine is an investment in your natural energy and better sleep!",
-            "Your body's natural energy is more sustainable than any caffeine boost.",
-            "Better sleep is one of the first benefits you'll notice without caffeine.",
-            "You're breaking free from the caffeine dependency cycle - that's powerful!",
-            "Natural energy feels so much better than artificial highs and crashes.",
-            "Think of how much money you're saving by not buying coffee every day!",
-            "Your anxiety levels may decrease as you reduce caffeine intake.",
-            "You're developing incredible self-discipline that applies to all areas of life.",
-            "Every craving you resist makes you stronger for the next one.",
-            "Your taste buds will appreciate flavors more without the bitter caffeine masking them."
+            "Every small step towards your goal is progress worth celebrating!",
+            "Consistency is more powerful than perfection - keep going!",
+            "Your body will thank you for making healthier choices.",
+            "Building better habits takes time, but you're doing amazing!",
+            "Focus on progress, not perfection. You've got this!",
+            "Each day within your goal is a victory!",
+            "Your energy levels will improve as you reach your goals consistently.",
+            "Remember why you started this journey - you're worth it!",
+            "Small changes lead to big transformations over time.",
+            "Celebrate every achievement, no matter how small!"
         ];
 
+        // Achievement configurations
         this.achievementConfig = [
             { id: 'first-day', days: 1, title: 'First Step' },
             { id: 'three-days', days: 3, title: 'Building Momentum' },
-            { id: 'five-days', days: 5, title: 'High Five' },
             { id: 'one-week', days: 7, title: 'Week Warrior' },
-            { id: 'ten-days', days: 10, title: 'Double Digits' },
             { id: 'two-weeks', days: 14, title: 'Fortnight Fighter' },
-            { id: 'twenty-days', days: 20, title: 'Twenty Triumph' },
             { id: 'one-month', days: 30, title: 'Monthly Master' },
-            { id: 'fifty-days', days: 50, title: 'Fifty Force' },
-            { id: 'three-months', days: 90, title: 'Quarterly Champion' },
-            { id: 'six-months', days: 180, title: 'Half-Year Hero' },
-            { id: 'one-year', days: 365, title: 'Year Legend' }
+            { id: 'three-months', days: 90, title: 'Quarterly Champion' }
         ];
 
         this.init();
@@ -49,24 +51,24 @@ class CaffeineTracker {
         this.loadData();
         this.bindEvents();
         this.updateDisplay();
+        this.updateGoalDisplay();
         this.updateDailyTip();
         this.checkAchievements();
         this.updateCaffeineDisplay();
         
-        // Initialize animations after a short delay
+        // Initialize animations
         setTimeout(() => {
             this.initializeAnimations();
         }, 500);
     }
 
+    // Animation methods (same as before)
     initializeAnimations() {
         this.createColorWaves();
         this.initializeParticleEffects();
         this.initializeSectionAnimations();
-        this.initializeAdvancedScrollEffects();
     }
 
-    // SimplyStrips Animation Methods
     createColorWaves() {
         const waves = document.querySelector('.color-waves');
         if (waves) {
@@ -79,21 +81,14 @@ class CaffeineTracker {
     }
 
     initializeParticleEffects() {
-        // Create floating particles
         const particleContainer = document.createElement('div');
         particleContainer.className = 'particle-container';
         particleContainer.style.cssText = `
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: -1;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: -1;
         `;
         document.body.appendChild(particleContainer);
         
-        // Create particles
         for (let i = 0; i < 15; i++) {
             this.createParticle(particleContainer);
         }
@@ -106,21 +101,16 @@ class CaffeineTracker {
         const color = colors[Math.floor(Math.random() * colors.length)];
         
         particle.style.cssText = `
-            position: absolute;
-            width: ${size}px;
-            height: ${size}px;
-            background: ${color};
-            border-radius: 50%;
+            position: absolute; width: ${size}px; height: ${size}px;
+            background: ${color}; border-radius: 50%;
             opacity: ${Math.random() * 0.5 + 0.2};
-            left: ${Math.random() * 100}%;
-            top: ${Math.random() * 100}%;
+            left: ${Math.random() * 100}%; top: ${Math.random() * 100}%;
             animation: float-particle ${Math.random() * 10 + 10}s infinite linear;
             box-shadow: 0 0 ${size * 2}px ${color};
         `;
         
         container.appendChild(particle);
         
-        // Remove and recreate particle after animation
         setTimeout(() => {
             if (particle.parentNode) {
                 particle.remove();
@@ -130,7 +120,6 @@ class CaffeineTracker {
     }
 
     initializeSectionAnimations() {
-        // Animate sections as they come into view
         const sections = document.querySelectorAll('section, .header');
         
         const sectionObserver = new IntersectionObserver((entries) => {
@@ -154,7 +143,6 @@ class CaffeineTracker {
         section.style.opacity = '1';
         section.style.transform = 'translateY(0)';
         
-        // Animate child elements
         const elements = section.querySelectorAll('h2, h3, p, .btn, .alternative-card, .achievement');
         elements.forEach((el, index) => {
             el.style.opacity = '0.8';
@@ -168,46 +156,91 @@ class CaffeineTracker {
         });
     }
 
-    initializeAdvancedScrollEffects() {
-        let ticking = false;
-        
-        const updateScrollEffects = () => {
-            const scrolled = window.pageYOffset;
+    // Data management
+    loadData() {
+        const saved = localStorage.getItem('caffeineGoalTrackerData');
+        if (saved) {
+            const data = JSON.parse(saved);
+            this.goalType = data.goalType || 'quit';
+            this.dailyLimit = data.dailyLimit || 0;
+            this.streak = data.streak || 0;
+            this.totalDays = data.totalDays || 0;
+            this.goalSuccessDays = data.goalSuccessDays || 0;
+            this.zeroCaffeineDays = data.zeroCaffeineDays || 0;
+            this.longestStreak = data.longestStreak || 0;
+            this.achievements = data.achievements || [];
+            this.lastUpdateDate = data.lastUpdateDate || null;
+            this.todayCaffeine = data.todayCaffeine || 0;
+            this.todayCaffeineItems = data.todayCaffeineItems || [];
+            this.lastCaffeineDate = data.lastCaffeineDate || null;
+            this.totalCaffeineConsumed = data.totalCaffeineConsumed || 0;
             
-            // Parallax for floating particles
-            const particleContainer = document.querySelector('.particle-container');
-            if (particleContainer) {
-                particleContainer.style.transform = `translateY(${scrolled * 0.1}px)`;
+            // Reset daily caffeine if new day
+            const today = new Date().toDateString();
+            if (this.lastCaffeineDate !== today) {
+                this.todayCaffeine = 0;
+                this.todayCaffeineItems = [];
             }
-            
-            // Update wave positions with scroll
-            const waves = document.querySelectorAll('.wave');
-            waves.forEach((wave, index) => {
-                const speed = (index + 1) * 0.05;
-                const currentTransform = wave.style.transform || '';
-                wave.style.transform = currentTransform + ` translateY(${scrolled * speed}px)`;
-            });
-            
-            ticking = false;
-        };
-        
-        window.addEventListener('scroll', () => {
-            if (!ticking) {
-                requestAnimationFrame(updateScrollEffects);
-                ticking = true;
-            }
-        });
+        }
     }
 
-    // Original ClearCup Methods + Caffeine Tracking
+    saveData() {
+        const data = {
+            goalType: this.goalType,
+            dailyLimit: this.dailyLimit,
+            streak: this.streak,
+            totalDays: this.totalDays,
+            goalSuccessDays: this.goalSuccessDays,
+            zeroCaffeineDays: this.zeroCaffeineDays,
+            longestStreak: this.longestStreak,
+            achievements: this.achievements,
+            lastUpdateDate: this.lastUpdateDate,
+            todayCaffeine: this.todayCaffeine,
+            todayCaffeineItems: this.todayCaffeineItems,
+            lastCaffeineDate: this.lastCaffeineDate,
+            totalCaffeineConsumed: this.totalCaffeineConsumed
+        };
+        localStorage.setItem('caffeineGoalTrackerData', JSON.stringify(data));
+    }
+
+    // Event binding
     bindEvents() {
-        document.getElementById('successBtn').addEventListener('click', () => this.markSuccess());
+        // Main action buttons
+        document.getElementById('successBtn').addEventListener('click', () => this.markGoalSuccess());
         document.getElementById('slipBtn').addEventListener('click', () => this.showCaffeineModal());
+        
+        // Goal settings
+        document.getElementById('goalSettingsBtn').addEventListener('click', () => this.showGoalModal());
+        document.getElementById('closeGoalModal').addEventListener('click', () => this.closeGoalModal());
+        document.getElementById('saveGoal').addEventListener('click', () => this.saveGoalSettings());
+        document.getElementById('cancelGoal').addEventListener('click', () => this.closeGoalModal());
+        
+        // Goal option changes
+        document.querySelectorAll('input[name="goalType"]').forEach(radio => {
+            radio.addEventListener('change', () => this.updateGoalPreview());
+        });
+        document.getElementById('dailyLimit').addEventListener('input', () => this.updateGoalPreview());
+        
+        // Preset goal buttons
+        document.querySelectorAll('.preset-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const limit = parseInt(e.target.dataset.limit);
+                document.getElementById('dailyLimit').value = limit;
+                this.updateGoalPreview();
+            });
+        });
+
+        // Statistics and reset
         document.getElementById('statsBtn').addEventListener('click', () => this.showStats());
         document.getElementById('resetBtn').addEventListener('click', () => this.confirmReset());
-        document.getElementById('closeModal').addEventListener('click', () => this.closeModal());
+        document.getElementById('closeStatsModal').addEventListener('click', () => this.closeStatsModal());
+        
+        // Modal click outside to close
+        document.getElementById('goalModal').addEventListener('click', (e) => {
+            if (e.target.id === 'goalModal') this.closeGoalModal();
+        });
         document.getElementById('statsModal').addEventListener('click', (e) => {
-            if (e.target.id === 'statsModal') this.closeModal();
+            if (e.target.id === 'statsModal') this.closeStatsModal();
         });
 
         // Caffeine modal events
@@ -217,7 +250,7 @@ class CaffeineTracker {
             if (e.target.id === 'caffeineModal') this.closeCaffeineModal();
         });
 
-        // Custom caffeine entry events
+        // Custom caffeine entry
         document.getElementById('customEntry').addEventListener('click', () => this.showCustomForm());
         document.getElementById('addCustom').addEventListener('click', () => this.addCustomCaffeine());
         document.getElementById('cancelCustom').addEventListener('click', () => this.hideCustomForm());
@@ -235,61 +268,159 @@ class CaffeineTracker {
         // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' || e.key === ' ') {
-                this.markSuccess();
-            } else if (e.key === 'r' || e.key === 'R') {
-                this.showCaffeineModal();
-            } else if (e.key === 's' || e.key === 'S') {
-                this.showStats();
+                if (!this.isModalOpen()) this.markGoalSuccess();
             } else if (e.key === 'Escape') {
-                this.closeModal();
+                this.closeGoalModal();
+                this.closeStatsModal();
                 this.closeCaffeineModal();
             }
         });
     }
 
-    loadData() {
-        const saved = localStorage.getItem('caffeineTrackerData');
-        if (saved) {
-            const data = JSON.parse(saved);
-            this.streak = data.streak || 0;
-            this.totalDays = data.totalDays || 0;
-            this.successfulDays = data.successfulDays || 0;
-            this.longestStreak = data.longestStreak || 0;
-            this.achievements = data.achievements || [];
-            this.lastUpdateDate = data.lastUpdateDate || null;
-            
-            // Load caffeine tracking data
-            this.todayCaffeine = data.todayCaffeine || 0;
-            this.todayCaffeineItems = data.todayCaffeineItems || [];
-            this.lastCaffeineDate = data.lastCaffeineDate || null;
-            this.totalCaffeineConsumed = data.totalCaffeineConsumed || 0;
-            
-            // Reset caffeine if it's a new day
-            const today = new Date().toDateString();
-            if (this.lastCaffeineDate !== today) {
-                this.todayCaffeine = 0;
-                this.todayCaffeineItems = [];
-            }
+    isModalOpen() {
+        return document.getElementById('goalModal').style.display === 'block' ||
+               document.getElementById('statsModal').style.display === 'block' ||
+               document.getElementById('caffeineModal').style.display === 'block';
+    }
+
+    // Goal management
+    showGoalModal() {
+        const modal = document.getElementById('goalModal');
+        
+        // Set current values
+        document.querySelector(`input[value="${this.goalType}"]`).checked = true;
+        document.getElementById('dailyLimit').value = this.dailyLimit;
+        
+        // Show/hide inputs based on goal type
+        this.toggleReductionInputs();
+        this.updateGoalPreview();
+        
+        modal.style.display = 'block';
+        modal.querySelector('.modal-content').classList.add('fade-in');
+    }
+
+    closeGoalModal() {
+        document.getElementById('goalModal').style.display = 'none';
+    }
+
+    toggleReductionInputs() {
+        const reductionInputs = document.getElementById('reductionInputs');
+        const isReduction = document.getElementById('reduction').checked;
+        reductionInputs.style.display = isReduction ? 'block' : 'none';
+    }
+
+    updateGoalPreview() {
+        const goalType = document.querySelector('input[name="goalType"]:checked').value;
+        const dailyLimit = parseInt(document.getElementById('dailyLimit').value) || 0;
+        const previewText = document.getElementById('goalPreviewText');
+        
+        this.toggleReductionInputs();
+        
+        if (goalType === 'quit') {
+            previewText.textContent = 'Track days with 0mg caffeine (Complete Quit)';
+        } else {
+            previewText.textContent = `Stay under ${dailyLimit}mg of caffeine per day (Reduction)`;
         }
     }
 
-    saveData() {
-        const data = {
-            streak: this.streak,
-            totalDays: this.totalDays,
-            successfulDays: this.successfulDays,
-            longestStreak: this.longestStreak,
-            achievements: this.achievements,
-            lastUpdateDate: this.lastUpdateDate,
-            todayCaffeine: this.todayCaffeine,
-            todayCaffeineItems: this.todayCaffeineItems,
-            lastCaffeineDate: this.lastCaffeineDate,
-            totalCaffeineConsumed: this.totalCaffeineConsumed
-        };
-        localStorage.setItem('caffeineTrackerData', JSON.stringify(data));
+    saveGoalSettings() {
+        const newGoalType = document.querySelector('input[name="goalType"]:checked').value;
+        const newDailyLimit = newGoalType === 'quit' ? 0 : (parseInt(document.getElementById('dailyLimit').value) || 100);
+        
+        // Check if goal changed significantly
+        const goalChanged = (this.goalType !== newGoalType) || 
+                           (newGoalType === 'reduction' && this.dailyLimit !== newDailyLimit);
+        
+        this.goalType = newGoalType;
+        this.dailyLimit = newDailyLimit;
+        
+        if (goalChanged) {
+            this.showMessage('Goal updated! Your progress continues with the new target. 🎯', 'success');
+        }
+        
+        this.saveData();
+        this.updateDisplay();
+        this.updateGoalDisplay();
+        this.updateCaffeineDisplay();
+        this.closeGoalModal();
     }
 
-    // Caffeine Modal Methods
+    updateGoalDisplay() {
+        const goalTypeEl = document.getElementById('goalType');
+        const goalDetailsEl = document.getElementById('goalDetails');
+        const streakLabelEl = document.getElementById('streakLabel');
+        const successBtnTextEl = document.getElementById('successBtnText');
+        
+        if (this.goalType === 'quit') {
+            goalTypeEl.textContent = 'Complete Quit';
+            goalDetailsEl.textContent = '0mg daily limit';
+            streakLabelEl.textContent = 'days caffeine-free';
+            successBtnTextEl.textContent = 'I stayed caffeine-free today!';
+        } else {
+            goalTypeEl.textContent = 'Caffeine Reduction';
+            goalDetailsEl.textContent = `${this.dailyLimit}mg daily limit`;
+            streakLabelEl.textContent = 'days on track';
+            successBtnTextEl.textContent = 'I stayed within my goal today!';
+        }
+    }
+
+    // Main tracking logic
+    markGoalSuccess() {
+        const today = new Date().toDateString();
+        
+        if (this.lastUpdateDate === today) {
+            this.showMessage("You've already logged today! Come back tomorrow. ⏰", 'info');
+            return;
+        }
+
+        // Check if today's caffeine intake meets the goal
+        if (!this.isWithinGoal()) {
+            this.showMessage(`You've already had ${this.todayCaffeine}mg today, which exceeds your ${this.dailyLimit}mg goal. Try again tomorrow! 💪`, 'warning');
+            return;
+        }
+
+        this.streak++;
+        this.totalDays++;
+        this.goalSuccessDays++;
+        
+        // Track zero caffeine days separately
+        if (this.todayCaffeine === 0) {
+            this.zeroCaffeineDays++;
+        }
+        
+        this.lastUpdateDate = today;
+        
+        // Reset daily tracking for tomorrow
+        this.todayCaffeine = 0;
+        this.todayCaffeineItems = [];
+        this.lastCaffeineDate = today;
+
+        if (this.streak > this.longestStreak) {
+            this.longestStreak = this.streak;
+        }
+
+        this.saveData();
+        this.updateDisplay();
+        this.updateCaffeineDisplay();
+        this.checkAchievements();
+        this.celebrateSuccess();
+        
+        const message = this.goalType === 'quit' 
+            ? `Amazing! ${this.streak} days caffeine-free! 🌟`
+            : `Great job! ${this.streak} days staying within your ${this.dailyLimit}mg goal! 🎯`;
+        
+        this.showMessage(message, 'success');
+    }
+
+    isWithinGoal() {
+        if (this.goalType === 'quit') {
+            return this.todayCaffeine === 0;
+        } else {
+            return this.todayCaffeine <= this.dailyLimit;
+        }
+    }
+
+    // Caffeine tracking
     showCaffeineModal() {
         const modal = document.getElementById('caffeineModal');
         modal.style.display = 'block';
@@ -299,7 +430,6 @@ class CaffeineTracker {
     closeCaffeineModal() {
         document.getElementById('caffeineModal').style.display = 'none';
         this.hideCustomForm();
-        // Remove any selections
         document.querySelectorAll('.caffeine-product').forEach(product => {
             product.classList.remove('selected');
         });
@@ -351,16 +481,29 @@ class CaffeineTracker {
         this.lastCaffeineDate = today;
         this.totalCaffeineConsumed += amount;
         
-        // Reset streak and mark as slip day
-        this.streak = 0;
-        this.totalDays++;
-        this.lastUpdateDate = today;
+        // Check if this breaks the streak
+        if (!this.isWithinGoal()) {
+            this.streak = 0;
+            this.totalDays++;
+            this.lastUpdateDate = today;
+            
+            const message = this.goalType === 'quit' 
+                ? `Added ${amount}mg from ${name}. Don't give up - tomorrow is a fresh start! 💪`
+                : `Added ${amount}mg from ${name}. You're now at ${this.todayCaffeine}mg (${this.dailyLimit}mg goal). Tomorrow's a new day! 💪`;
+                
+            this.showMessage(message, 'warning');
+        } else {
+            const remaining = this.goalType === 'quit' ? 0 : this.dailyLimit - this.todayCaffeine;
+            const message = this.goalType === 'quit' 
+                ? `Added ${amount}mg from ${name}. Your streak is reset, but keep going!`
+                : `Added ${amount}mg from ${name}. You have ${remaining}mg remaining for your goal today! 👍`;
+                
+            this.showMessage(message, 'info');
+        }
         
         this.saveData();
         this.updateDisplay();
         this.updateCaffeineDisplay();
-        
-        this.showMessage(`Added ${amount}mg caffeine from ${name}. Don't give up - tomorrow is a fresh start! 💪`, 'warning');
     }
 
     removeCaffeineItem(index) {
@@ -379,33 +522,57 @@ class CaffeineTracker {
         const levelEl = document.getElementById('caffeineLevel');
         const fillEl = document.getElementById('caffeineFill');
         const itemsEl = document.getElementById('caffeineItems');
+        const goalRemainingEl = document.getElementById('goalRemaining');
         
-        // Update amount
+        // Update amount display
         amountEl.textContent = this.todayCaffeine;
+        goalRemainingEl.textContent = `/ ${this.dailyLimit}mg goal`;
         
-        // Update level description
+        // Update level description and progress bar
         let level = '';
         let percentage = 0;
+        let isOverLimit = false;
         
-        if (this.todayCaffeine === 0) {
-            level = 'No caffeine consumed';
-            percentage = 0;
-        } else if (this.todayCaffeine <= 100) {
-            level = 'Low caffeine intake';
-            percentage = (this.todayCaffeine / 400) * 100; // 400mg is considered high
-        } else if (this.todayCaffeine <= 200) {
-            level = 'Moderate caffeine intake';
-            percentage = (this.todayCaffeine / 400) * 100;
-        } else if (this.todayCaffeine <= 300) {
-            level = 'High caffeine intake';
-            percentage = (this.todayCaffeine / 400) * 100;
+        if (this.goalType === 'quit') {
+            if (this.todayCaffeine === 0) {
+                level = 'Perfect! No caffeine consumed';
+                percentage = 0;
+            } else {
+                level = 'Goal exceeded - caffeine consumed';
+                percentage = 100;
+                isOverLimit = true;
+            }
+            goalRemainingEl.textContent = '/ 0mg goal (quit)';
         } else {
-            level = 'Very high caffeine intake';
-            percentage = Math.min((this.todayCaffeine / 400) * 100, 100);
+            if (this.todayCaffeine === 0) {
+                level = 'Excellent! No caffeine consumed';
+                percentage = 0;
+            } else if (this.todayCaffeine <= this.dailyLimit) {
+                level = `Within goal limits (${this.dailyLimit - this.todayCaffeine}mg remaining)`;
+                percentage = (this.todayCaffeine / this.dailyLimit) * 100;
+            } else {
+                level = `Over goal limit by ${this.todayCaffeine - this.dailyLimit}mg`;
+                percentage = 100;
+                isOverLimit = true;
+            }
         }
         
         levelEl.textContent = level;
-        fillEl.style.width = `${percentage}%`;
+        fillEl.style.width = `${Math.min(percentage, 100)}%`;
+        
+        // Update colors based on goal status
+        if (isOverLimit) {
+            fillEl.classList.add('over-limit');
+            amountEl.style.background = 'linear-gradient(45deg, #ff4444, #cc0000)';
+        } else {
+            fillEl.classList.remove('over-limit');
+            amountEl.style.background = 'linear-gradient(45deg, #ff1bbbff, #fcc224ff)';
+        }
+        
+        // Apply gradient text
+        amountEl.style.backgroundClip = 'text';
+        amountEl.style.webkitBackgroundClip = 'text';
+        amountEl.style.webkitTextFillColor = 'transparent';
         
         // Update items list
         itemsEl.innerHTML = '';
@@ -421,56 +588,9 @@ class CaffeineTracker {
             `;
             itemsEl.appendChild(itemEl);
         });
-        
-        // Change colors based on caffeine level
-        if (this.todayCaffeine > 300) {
-            fillEl.style.background = 'linear-gradient(90deg, #ff4444, #cc0000)';
-            amountEl.style.background = 'linear-gradient(45deg, #ff4444, #cc0000)';
-        } else if (this.todayCaffeine > 200) {
-            fillEl.style.background = 'linear-gradient(90deg, #ff6666, #ff4444)';
-            amountEl.style.background = 'linear-gradient(45deg, #ff6666, #ff4444)';
-        } else {
-            fillEl.style.background = 'linear-gradient(90deg, #ff4444, #ff6b6b, #ff9999)';
-            amountEl.style.background = 'linear-gradient(45deg, #ff4444, #ff6b6b)';
-        }
-        
-        // Apply background-clip for gradient text
-        amountEl.style.backgroundClip = 'text';
-        amountEl.style.webkitBackgroundClip = 'text';
-        amountEl.style.webkitTextFillColor = 'transparent';
     }
 
-    markSuccess() {
-        const today = new Date().toDateString();
-        
-        if (this.lastUpdateDate === today) {
-            this.showMessage("You've already logged today! Come back tomorrow.", 'info');
-            return;
-        }
-
-        this.streak++;
-        this.totalDays++;
-        this.successfulDays++;
-        this.lastUpdateDate = today;
-
-        // Reset daily caffeine tracking
-        this.todayCaffeine = 0;
-        this.todayCaffeineItems = [];
-        this.lastCaffeineDate = today;
-
-        if (this.streak > this.longestStreak) {
-            this.longestStreak = this.streak;
-        }
-
-        this.saveData();
-        this.updateDisplay();
-        this.updateCaffeineDisplay();
-        this.checkAchievements();
-        this.celebrateSuccess();
-        
-        this.showMessage(`Amazing! ${this.streak} days caffeine-free! 🌟`, 'success');
-    }
-
+    // Display updates
     updateDisplay() {
         document.getElementById('streakCounter').textContent = this.streak;
         
@@ -478,10 +598,12 @@ class CaffeineTracker {
         const progressPercent = Math.min((this.streak / 30) * 100, 100);
         document.getElementById('progressFill').style.width = `${progressPercent}%`;
         
-        // Update progress text
+        // Update progress text based on goal type
         let progressText = '';
         if (this.streak === 0) {
-            progressText = "Ready to start your caffeine-free journey?";
+            progressText = this.goalType === 'quit' 
+                ? "Ready to start your caffeine-free journey?"
+                : "Ready to start achieving your daily goals?";
         } else if (this.streak < 7) {
             progressText = `${7 - this.streak} days until your first week milestone!`;
         } else if (this.streak < 30) {
@@ -490,8 +612,36 @@ class CaffeineTracker {
             progressText = "You're on fire! Keep up the amazing work!";
         }
         document.getElementById('progressText').textContent = progressText;
+        
+        // Update quick stats
+        document.getElementById('goalDays').textContent = this.goalSuccessDays;
+        document.getElementById('zeroDays').textContent = this.zeroCaffeineDays;
+        document.getElementById('avgCaffeine').textContent = this.totalDays > 0 
+            ? Math.round(this.totalCaffeineConsumed / this.totalDays) 
+            : 0;
+        document.getElementById('longestStreak').textContent = this.longestStreak;
     }
 
+    // Statistics
+    showStats() {
+        const modal = document.getElementById('statsModal');
+        
+        document.getElementById('totalDays').textContent = this.totalDays;
+        document.getElementById('goalSuccessRate').textContent = this.totalDays > 0 ? 
+            Math.round((this.goalSuccessDays / this.totalDays) * 100) + '%' : '0%';
+        document.getElementById('zeroSuccessRate').textContent = this.totalDays > 0 ? 
+            Math.round((this.zeroCaffeineDays / this.totalDays) * 100) + '%' : '0%';
+        document.getElementById('totalCaffeineConsumed').textContent = this.totalCaffeineConsumed;
+        
+        modal.style.display = 'block';
+        modal.querySelector('.modal-content').classList.add('fade-in');
+    }
+
+    closeStatsModal() {
+        document.getElementById('statsModal').style.display = 'none';
+    }
+
+    // Achievements
     checkAchievements() {
         this.achievementConfig.forEach(config => {
             if (this.streak >= config.days && !this.achievements.includes(config.id)) {
@@ -500,7 +650,6 @@ class CaffeineTracker {
             }
         });
 
-        // Update achievement display
         document.querySelectorAll('.achievement').forEach(achievement => {
             const achievementId = achievement.dataset.achievement;
             if (this.achievements.includes(achievementId)) {
@@ -522,21 +671,19 @@ class CaffeineTracker {
         }
     }
 
+    // User interactions
     selectAlternative(card) {
-        // Remove previous selection
         document.querySelectorAll('.alternative-card').forEach(c => c.classList.remove('selected'));
         
-        // Add selection to clicked card
         card.classList.add('selected');
         card.classList.add('pulse');
         
-        // Remove pulse after animation
         setTimeout(() => {
             card.classList.remove('pulse');
         }, 2000);
 
         const alternative = card.dataset.alternative;
-        this.showMessage(`Great choice! ${card.querySelector('h3').textContent} is an excellent caffeine alternative. ✨`, 'success');
+        this.showMessage(`Great choice! ${card.querySelector('h3').textContent} is an excellent alternative. ✨`, 'success');
     }
 
     updateDailyTip() {
@@ -545,23 +692,7 @@ class CaffeineTracker {
         document.getElementById('dailyTip').textContent = this.tips[tipIndex];
     }
 
-    showStats() {
-        const modal = document.getElementById('statsModal');
-        
-        document.getElementById('totalDays').textContent = this.totalDays;
-        document.getElementById('successRate').textContent = this.totalDays > 0 ? 
-            Math.round((this.successfulDays / this.totalDays) * 100) + '%' : '0%';
-        document.getElementById('longestStreak').textContent = this.longestStreak;
-        document.getElementById('achievementsCount').textContent = this.achievements.length;
-        
-        modal.style.display = 'block';
-        modal.querySelector('.modal-content').classList.add('fade-in');
-    }
-
-    closeModal() {
-        document.getElementById('statsModal').style.display = 'none';
-    }
-
+    // Reset functionality
     confirmReset() {
         if (confirm('Are you sure you want to reset all your progress? This cannot be undone.')) {
             this.resetData();
@@ -569,20 +700,21 @@ class CaffeineTracker {
     }
 
     resetData() {
+        this.goalType = 'quit';
+        this.dailyLimit = 0;
         this.streak = 0;
         this.totalDays = 0;
-        this.successfulDays = 0;
+        this.goalSuccessDays = 0;
+        this.zeroCaffeineDays = 0;
         this.longestStreak = 0;
         this.achievements = [];
         this.lastUpdateDate = null;
-        
-        // Reset caffeine tracking
         this.todayCaffeine = 0;
         this.todayCaffeineItems = [];
         this.lastCaffeineDate = null;
         this.totalCaffeineConsumed = 0;
         
-        localStorage.removeItem('caffeineTrackerData');
+        localStorage.removeItem('caffeineGoalTrackerData');
         
         // Reset UI
         document.querySelectorAll('.achievement').forEach(achievement => {
@@ -595,27 +727,26 @@ class CaffeineTracker {
         });
         
         this.updateDisplay();
+        this.updateGoalDisplay();
         this.updateCaffeineDisplay();
         this.showMessage('Your progress has been reset. Ready for a fresh start! 🚀', 'info');
     }
 
+    // Success celebrations
     celebrateSuccess() {
-        // Add bounce animation to streak counter
         const counter = document.getElementById('streakCounter');
         counter.classList.add('bounce');
         setTimeout(() => counter.classList.remove('bounce'), 600);
 
-        // Add celebration effect for milestones
         if (this.streak % 7 === 0 || this.streak === 1 || this.streak === 3 || this.streak === 5) {
             this.addCelebrationEffect();
         }
 
-        // Create success particles
         this.createSuccessParticles();
     }
 
     createSuccessParticles() {
-        const colors = ['#4CAF50', '#45a049', '#66bb6a', '#81c784'];
+        const colors = ['#ff3333ff', '#ff1affff', '#ff830eff', '#ff2566ff'];
         for (let i = 0; i < 8; i++) {
             setTimeout(() => {
                 this.createFloatingEmoji('⭐', colors[Math.floor(Math.random() * colors.length)]);
@@ -624,8 +755,7 @@ class CaffeineTracker {
     }
 
     addCelebrationEffect() {
-        // Create floating emojis
-        const emojis = ['🎉', '⭐', '🏆', '💪', '🌟', '✨', '🎊', '🌈'];
+        const emojis = ['🎉', '⭐', '🏆', '💪', '🌟', '✨', '🎊', '🎯'];
         for (let i = 0; i < 12; i++) {
             setTimeout(() => {
                 this.createFloatingEmoji(emojis[Math.floor(Math.random() * emojis.length)]);
@@ -637,17 +767,12 @@ class CaffeineTracker {
         const element = document.createElement('div');
         element.textContent = emoji;
         element.style.cssText = `
-            position: fixed;
-            font-size: 2rem;
-            pointer-events: none;
-            z-index: 1000;
-            left: ${Math.random() * window.innerWidth}px;
-            top: ${window.innerHeight}px;
+            position: fixed; font-size: 2rem; pointer-events: none; z-index: 1000;
+            left: ${Math.random() * window.innerWidth}px; top: ${window.innerHeight}px;
             animation: floatUp 3s ease-out forwards;
             text-shadow: 0 0 10px ${color || 'rgba(255,255,255,0.8)'};
         `;
         
-        // Add floating animation
         const style = document.createElement('style');
         style.textContent = `
             @keyframes floatUp {
@@ -661,19 +786,14 @@ class CaffeineTracker {
         
         document.body.appendChild(element);
         
-        // Remove element after animation
         setTimeout(() => {
-            if (document.body.contains(element)) {
-                document.body.removeChild(element);
-            }
-            if (document.head.contains(style)) {
-                document.head.removeChild(style);
-            }
+            if (document.body.contains(element)) document.body.removeChild(element);
+            if (document.head.contains(style)) document.head.removeChild(style);
         }, 3000);
     }
 
+    // Message system
     showMessage(message, type = 'info') {
-        // Remove existing message if any
         const existingMessage = document.querySelector('.notification-message');
         if (existingMessage) {
             existingMessage.remove();
@@ -684,22 +804,13 @@ class CaffeineTracker {
         messageEl.textContent = message;
         
         messageEl.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px 20px;
-            border-radius: 15px;
-            color: white;
-            font-weight: 600;
-            z-index: 1001;
-            max-width: 320px;
-            animation: slideInRight 0.3s ease;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.2);
+            position: fixed; top: 20px; right: 20px; padding: 15px 20px;
+            border-radius: 15px; color: white; font-weight: 600; z-index: 1001;
+            max-width: 320px; animation: slideInRight 0.3s ease;
+            backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2);
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         `;
 
-        // Set background color based on type
         const colors = {
             success: 'linear-gradient(135deg, rgba(76, 175, 80, 0.9), rgba(69, 160, 73, 0.9))',
             warning: 'linear-gradient(135deg, rgba(255, 152, 0, 0.9), rgba(245, 124, 0, 0.9))',
@@ -709,60 +820,53 @@ class CaffeineTracker {
         
         messageEl.style.background = colors[type] || colors.info;
         
-        // Add slide animation
         const style = document.createElement('style');
         style.textContent = `
             @keyframes slideInRight {
-                from {
-                    transform: translateX(100%);
-                    opacity: 0;
-                }
-                to {
-                    transform: translateX(0);
-                    opacity: 1;
-                }
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOutRight {
+                to { transform: translateX(100%); opacity: 0; }
             }
         `;
         document.head.appendChild(style);
         
         document.body.appendChild(messageEl);
         
-        // Auto remove after 4 seconds
         setTimeout(() => {
             if (messageEl.parentNode) {
                 messageEl.style.animation = 'slideOutRight 0.3s ease forwards';
                 setTimeout(() => {
-                    if (messageEl.parentNode) {
-                        messageEl.remove();
-                    }
-                    if (style.parentNode) {
-                        style.remove();
-                    }
+                    if (messageEl.parentNode) messageEl.remove();
+                    if (style.parentNode) style.remove();
                 }, 300);
             }
         }, 4000);
-        
-        // Add slideOut animation
-        style.textContent += `
-            @keyframes slideOutRight {
-                to {
-                    transform: translateX(100%);
-                    opacity: 0;
-                }
-            }
-        `;
     }
 }
 
-// Global tracker instance for remove button functionality
+// Global tracker instance
 let tracker;
 
-// Initialize the enhanced app when DOM is loaded
+// Initialize the app
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize the main application
-    tracker = new CaffeineTracker();
+    tracker = new CaffeineGoalTracker();
     
-    // Add some entrance animations for initial load
+    // Add CSS for particle animation
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes float-particle {
+            0% { transform: translateY(100vh) rotate(0deg); }
+            100% { transform: translateY(-100px) rotate(360deg); }
+        }
+        .section-visible {
+            opacity: 1 !important;
+            transform: translateY(0) !important;
+        }
+    `;
+    document.head.appendChild(style);
+    
     setTimeout(() => {
         document.body.style.opacity = '1';
         document.body.style.transition = 'opacity 1s ease';
