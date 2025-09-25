@@ -1,4 +1,4 @@
-// Enhanced ClearCup with SimplyStrips Animations
+// Enhanced ClearCup with SimplyStrips Animations and Caffeine Tracking
 class CaffeineTracker {
     constructor() {
         this.streak = 0;
@@ -7,6 +7,12 @@ class CaffeineTracker {
         this.longestStreak = 0;
         this.achievements = [];
         this.lastUpdateDate = null;
+        
+        // New caffeine tracking properties
+        this.todayCaffeine = 0;
+        this.todayCaffeineItems = [];
+        this.lastCaffeineDate = null;
+        this.totalCaffeineConsumed = 0;
         
         this.tips = [
             "Remember: Each day without caffeine is an investment in your natural energy and better sleep!",
@@ -45,6 +51,7 @@ class CaffeineTracker {
         this.updateDisplay();
         this.updateDailyTip();
         this.checkAchievements();
+        this.updateCaffeineDisplay();
         
         // Initialize animations after a short delay
         setTimeout(() => {
@@ -192,15 +199,32 @@ class CaffeineTracker {
         });
     }
 
-    // Original ClearCup Methods
+    // Original ClearCup Methods + Caffeine Tracking
     bindEvents() {
         document.getElementById('successBtn').addEventListener('click', () => this.markSuccess());
-        document.getElementById('slipBtn').addEventListener('click', () => this.markSlip());
+        document.getElementById('slipBtn').addEventListener('click', () => this.showCaffeineModal());
         document.getElementById('statsBtn').addEventListener('click', () => this.showStats());
         document.getElementById('resetBtn').addEventListener('click', () => this.confirmReset());
         document.getElementById('closeModal').addEventListener('click', () => this.closeModal());
         document.getElementById('statsModal').addEventListener('click', (e) => {
             if (e.target.id === 'statsModal') this.closeModal();
+        });
+
+        // Caffeine modal events
+        document.getElementById('closeCaffeineModal').addEventListener('click', () => this.closeCaffeineModal());
+        document.getElementById('cancelCaffeine').addEventListener('click', () => this.closeCaffeineModal());
+        document.getElementById('caffeineModal').addEventListener('click', (e) => {
+            if (e.target.id === 'caffeineModal') this.closeCaffeineModal();
+        });
+
+        // Custom caffeine entry events
+        document.getElementById('customEntry').addEventListener('click', () => this.showCustomForm());
+        document.getElementById('addCustom').addEventListener('click', () => this.addCustomCaffeine());
+        document.getElementById('cancelCustom').addEventListener('click', () => this.hideCustomForm());
+
+        // Caffeine product selection
+        document.querySelectorAll('.caffeine-product:not(.custom-entry)').forEach(product => {
+            product.addEventListener('click', () => this.selectCaffeineProduct(product));
         });
 
         // Alternative cards interaction
@@ -213,9 +237,12 @@ class CaffeineTracker {
             if (e.key === 'Enter' || e.key === ' ') {
                 this.markSuccess();
             } else if (e.key === 'r' || e.key === 'R') {
-                this.markSlip();
+                this.showCaffeineModal();
             } else if (e.key === 's' || e.key === 'S') {
                 this.showStats();
+            } else if (e.key === 'Escape') {
+                this.closeModal();
+                this.closeCaffeineModal();
             }
         });
     }
@@ -230,6 +257,19 @@ class CaffeineTracker {
             this.longestStreak = data.longestStreak || 0;
             this.achievements = data.achievements || [];
             this.lastUpdateDate = data.lastUpdateDate || null;
+            
+            // Load caffeine tracking data
+            this.todayCaffeine = data.todayCaffeine || 0;
+            this.todayCaffeineItems = data.todayCaffeineItems || [];
+            this.lastCaffeineDate = data.lastCaffeineDate || null;
+            this.totalCaffeineConsumed = data.totalCaffeineConsumed || 0;
+            
+            // Reset caffeine if it's a new day
+            const today = new Date().toDateString();
+            if (this.lastCaffeineDate !== today) {
+                this.todayCaffeine = 0;
+                this.todayCaffeineItems = [];
+            }
         }
     }
 
@@ -240,9 +280,164 @@ class CaffeineTracker {
             successfulDays: this.successfulDays,
             longestStreak: this.longestStreak,
             achievements: this.achievements,
-            lastUpdateDate: this.lastUpdateDate
+            lastUpdateDate: this.lastUpdateDate,
+            todayCaffeine: this.todayCaffeine,
+            todayCaffeineItems: this.todayCaffeineItems,
+            lastCaffeineDate: this.lastCaffeineDate,
+            totalCaffeineConsumed: this.totalCaffeineConsumed
         };
         localStorage.setItem('caffeineTrackerData', JSON.stringify(data));
+    }
+
+    // Caffeine Modal Methods
+    showCaffeineModal() {
+        const modal = document.getElementById('caffeineModal');
+        modal.style.display = 'block';
+        modal.querySelector('.modal-content').classList.add('fade-in');
+    }
+
+    closeCaffeineModal() {
+        document.getElementById('caffeineModal').style.display = 'none';
+        this.hideCustomForm();
+        // Remove any selections
+        document.querySelectorAll('.caffeine-product').forEach(product => {
+            product.classList.remove('selected');
+        });
+    }
+
+    selectCaffeineProduct(product) {
+        const caffeine = parseInt(product.dataset.caffeine);
+        const name = product.dataset.name;
+        
+        this.addCaffeine(caffeine, name);
+        this.closeCaffeineModal();
+    }
+
+    showCustomForm() {
+        document.getElementById('customForm').style.display = 'block';
+        document.getElementById('customName').focus();
+    }
+
+    hideCustomForm() {
+        document.getElementById('customForm').style.display = 'none';
+        document.getElementById('customName').value = '';
+        document.getElementById('customCaffeine').value = '';
+    }
+
+    addCustomCaffeine() {
+        const name = document.getElementById('customName').value.trim();
+        const caffeine = parseInt(document.getElementById('customCaffeine').value);
+        
+        if (!name) {
+            this.showMessage('Please enter a product name', 'warning');
+            return;
+        }
+        
+        if (!caffeine || caffeine < 0 || caffeine > 1000) {
+            this.showMessage('Please enter a valid caffeine amount (0-1000mg)', 'warning');
+            return;
+        }
+        
+        this.addCaffeine(caffeine, name);
+        this.closeCaffeineModal();
+    }
+
+    addCaffeine(amount, name) {
+        const today = new Date().toDateString();
+        
+        // Add to today's totals
+        this.todayCaffeine += amount;
+        this.todayCaffeineItems.push({ name, amount });
+        this.lastCaffeineDate = today;
+        this.totalCaffeineConsumed += amount;
+        
+        // Reset streak and mark as slip day
+        this.streak = 0;
+        this.totalDays++;
+        this.lastUpdateDate = today;
+        
+        this.saveData();
+        this.updateDisplay();
+        this.updateCaffeineDisplay();
+        
+        this.showMessage(`Added ${amount}mg caffeine from ${name}. Don't give up - tomorrow is a fresh start! 💪`, 'warning');
+    }
+
+    removeCaffeineItem(index) {
+        const item = this.todayCaffeineItems[index];
+        this.todayCaffeine -= item.amount;
+        this.totalCaffeineConsumed -= item.amount;
+        this.todayCaffeineItems.splice(index, 1);
+        
+        this.saveData();
+        this.updateCaffeineDisplay();
+        this.showMessage(`Removed ${item.name}`, 'info');
+    }
+
+    updateCaffeineDisplay() {
+        const amountEl = document.getElementById('caffeineAmount');
+        const levelEl = document.getElementById('caffeineLevel');
+        const fillEl = document.getElementById('caffeineFill');
+        const itemsEl = document.getElementById('caffeineItems');
+        
+        // Update amount
+        amountEl.textContent = this.todayCaffeine;
+        
+        // Update level description
+        let level = '';
+        let percentage = 0;
+        
+        if (this.todayCaffeine === 0) {
+            level = 'No caffeine consumed';
+            percentage = 0;
+        } else if (this.todayCaffeine <= 100) {
+            level = 'Low caffeine intake';
+            percentage = (this.todayCaffeine / 400) * 100; // 400mg is considered high
+        } else if (this.todayCaffeine <= 200) {
+            level = 'Moderate caffeine intake';
+            percentage = (this.todayCaffeine / 400) * 100;
+        } else if (this.todayCaffeine <= 300) {
+            level = 'High caffeine intake';
+            percentage = (this.todayCaffeine / 400) * 100;
+        } else {
+            level = 'Very high caffeine intake';
+            percentage = Math.min((this.todayCaffeine / 400) * 100, 100);
+        }
+        
+        levelEl.textContent = level;
+        fillEl.style.width = `${percentage}%`;
+        
+        // Update items list
+        itemsEl.innerHTML = '';
+        this.todayCaffeineItems.forEach((item, index) => {
+            const itemEl = document.createElement('div');
+            itemEl.className = 'caffeine-item';
+            itemEl.innerHTML = `
+                <i class="fas fa-coffee"></i>
+                <span>${item.name} (${item.amount}mg)</span>
+                <button class="remove-caffeine" onclick="tracker.removeCaffeineItem(${index})">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            itemsEl.appendChild(itemEl);
+        });
+        
+        // Change colors based on caffeine level
+        if (this.todayCaffeine > 300) {
+            fillEl.style.background = 'linear-gradient(90deg, #ff4444, #cc0000)';
+            amountEl.style.background = 'linear-gradient(45deg, #ff4444, #cc0000)';
+        } else if (this.todayCaffeine > 200) {
+            fillEl.style.background = 'linear-gradient(90deg, #ff6666, #ff4444)';
+            amountEl.style.background = 'linear-gradient(45deg, #ff6666, #ff4444)';
+        } else {
+            fillEl.style.background = 'linear-gradient(90deg, #ff4444, #ff6b6b, #ff9999)';
+            amountEl.style.background = 'linear-gradient(45deg, #ff4444, #ff6b6b)';
+        }
+        
+        // Apply background-clip for gradient text
+        amountEl.style.backgroundClip = 'text';
+        amountEl.style.webkitBackgroundClip = 'text';
+        amountEl.style.webkitTextFillColor = 'transparent';
     }
 
     markSuccess() {
@@ -258,34 +453,22 @@ class CaffeineTracker {
         this.successfulDays++;
         this.lastUpdateDate = today;
 
+        // Reset daily caffeine tracking
+        this.todayCaffeine = 0;
+        this.todayCaffeineItems = [];
+        this.lastCaffeineDate = today;
+
         if (this.streak > this.longestStreak) {
             this.longestStreak = this.streak;
         }
 
         this.saveData();
         this.updateDisplay();
+        this.updateCaffeineDisplay();
         this.checkAchievements();
         this.celebrateSuccess();
         
         this.showMessage(`Amazing! ${this.streak} days caffeine-free! 🌟`, 'success');
-    }
-
-    markSlip() {
-        const today = new Date().toDateString();
-        
-        if (this.lastUpdateDate === today) {
-            this.showMessage("You've already logged today! Tomorrow is a new day.", 'info');
-            return;
-        }
-
-        this.streak = 0;
-        this.totalDays++;
-        this.lastUpdateDate = today;
-
-        this.saveData();
-        this.updateDisplay();
-        
-        this.showMessage("Don't worry! Every slip is a learning opportunity. Start fresh tomorrow! 💪", 'warning');
     }
 
     updateDisplay() {
@@ -393,6 +576,12 @@ class CaffeineTracker {
         this.achievements = [];
         this.lastUpdateDate = null;
         
+        // Reset caffeine tracking
+        this.todayCaffeine = 0;
+        this.todayCaffeineItems = [];
+        this.lastCaffeineDate = null;
+        this.totalCaffeineConsumed = 0;
+        
         localStorage.removeItem('caffeineTrackerData');
         
         // Reset UI
@@ -406,6 +595,7 @@ class CaffeineTracker {
         });
         
         this.updateDisplay();
+        this.updateCaffeineDisplay();
         this.showMessage('Your progress has been reset. Ready for a fresh start! 🚀', 'info');
     }
 
@@ -564,10 +754,13 @@ class CaffeineTracker {
     }
 }
 
+// Global tracker instance for remove button functionality
+let tracker;
+
 // Initialize the enhanced app when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     // Initialize the main application
-    new CaffeineTracker();
+    tracker = new CaffeineTracker();
     
     // Add some entrance animations for initial load
     setTimeout(() => {

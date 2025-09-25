@@ -158,6 +158,22 @@
                     <p id="dailyTip">Remember: Each day without caffeine is an investment in your natural energy and better sleep!</p>
                 </div>
             </section>
+
+            <!-- Caffeine Intake Tracking Section -->
+            <section class="caffeine-tracking-section">
+                <h2>Caffeine Intake Today</h2>
+                <div class="caffeine-display">
+                    <div class="caffeine-amount">
+                        <span class="caffeine-number" id="caffeineAmount">0</span>
+                        <span class="caffeine-unit">mg</span>
+                    </div>
+                    <div class="caffeine-level" id="caffeineLevel">No caffeine consumed</div>
+                    <div class="caffeine-bar">
+                        <div class="caffeine-fill" id="caffeineFill"></div>
+                    </div>
+                    <div class="caffeine-items" id="caffeineItems"></div>
+                </div>
+            </section>
         </main>
 
         <!-- Statistics Modal -->
@@ -182,6 +198,120 @@
                         <h3 id="achievementsCount">0</h3>
                         <p>Achievements Earned</p>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Caffeine Selection Modal -->
+        <div class="modal" id="caffeineModal">
+            <div class="modal-content caffeine-modal-content">
+                <span class="close" id="closeCaffeineModal">&times;</span>
+                <h2>What type of caffeine did you have?</h2>
+                <div class="caffeine-products-grid" id="caffeineProductsGrid">
+                    <!-- Coffee Products -->
+                    <div class="caffeine-product" data-caffeine="95" data-name="Coffee (8oz)">
+                        <i class="fas fa-coffee"></i>
+                        <h3>Coffee</h3>
+                        <p class="caffeine-mg">95mg</p>
+                        <p class="product-desc">8oz cup</p>
+                    </div>
+                    <div class="caffeine-product" data-caffeine="150" data-name="Espresso Shot">
+                        <i class="fas fa-coffee"></i>
+                        <h3>Espresso</h3>
+                        <p class="caffeine-mg">150mg</p>
+                        <p class="product-desc">Double shot</p>
+                    </div>
+                    <div class="caffeine-product" data-caffeine="165" data-name="Starbucks Grande">
+                        <i class="fas fa-coffee"></i>
+                        <h3>Starbucks</h3>
+                        <p class="caffeine-mg">165mg</p>
+                        <p class="product-desc">Grande size</p>
+                    </div>
+
+                    <!-- Tea Products -->
+                    <div class="caffeine-product" data-caffeine="47" data-name="Black Tea">
+                        <i class="fas fa-leaf"></i>
+                        <h3>Black Tea</h3>
+                        <p class="caffeine-mg">47mg</p>
+                        <p class="product-desc">8oz cup</p>
+                    </div>
+                    <div class="caffeine-product" data-caffeine="28" data-name="Green Tea">
+                        <i class="fas fa-leaf"></i>
+                        <h3>Green Tea</h3>
+                        <p class="caffeine-mg">28mg</p>
+                        <p class="product-desc">8oz cup</p>
+                    </div>
+
+                    <!-- Energy Drinks -->
+                    <div class="caffeine-product" data-caffeine="80" data-name="Red Bull">
+                        <i class="fas fa-bolt"></i>
+                        <h3>Red Bull</h3>
+                        <p class="caffeine-mg">80mg</p>
+                        <p class="product-desc">8.4oz can</p>
+                    </div>
+                    <div class="caffeine-product" data-caffeine="160" data-name="Monster Energy">
+                        <i class="fas fa-bolt"></i>
+                        <h3>Monster</h3>
+                        <p class="caffeine-mg">160mg</p>
+                        <p class="product-desc">16oz can</p>
+                    </div>
+                    <div class="caffeine-product" data-caffeine="300" data-name="Bang Energy">
+                        <i class="fas fa-bolt"></i>
+                        <h3>Bang</h3>
+                        <p class="caffeine-mg">300mg</p>
+                        <p class="product-desc">16oz can</p>
+                    </div>
+                    <div class="caffeine-product" data-caffeine="200" data-name="Reign Energy">
+                        <i class="fas fa-bolt"></i>
+                        <h3>Reign</h3>
+                        <p class="caffeine-mg">200mg</p>
+                        <p class="product-desc">16oz can</p>
+                    </div>
+
+                    <!-- Soda -->
+                    <div class="caffeine-product" data-caffeine="34" data-name="Coca Cola">
+                        <i class="fas fa-glass-whiskey"></i>
+                        <h3>Coca Cola</h3>
+                        <p class="caffeine-mg">34mg</p>
+                        <p class="product-desc">12oz can</p>
+                    </div>
+                    <div class="caffeine-product" data-caffeine="55" data-name="Mountain Dew">
+                        <i class="fas fa-glass-whiskey"></i>
+                        <h3>Mountain Dew</h3>
+                        <p class="caffeine-mg">55mg</p>
+                        <p class="product-desc">12oz can</p>
+                    </div>
+
+                    <!-- Pre-workout -->
+                    <div class="caffeine-product" data-caffeine="250" data-name="Pre-workout">
+                        <i class="fas fa-dumbbell"></i>
+                        <h3>Pre-workout</h3>
+                        <p class="caffeine-mg">250mg</p>
+                        <p class="product-desc">Average serving</p>
+                    </div>
+
+                    <!-- Custom Entry -->
+                    <div class="caffeine-product custom-entry" id="customEntry">
+                        <i class="fas fa-plus"></i>
+                        <h3>Custom</h3>
+                        <p class="caffeine-mg">?mg</p>
+                        <p class="product-desc">Enter your own</p>
+                    </div>
+                </div>
+
+                <!-- Custom Entry Form -->
+                <div class="custom-form" id="customForm" style="display: none;">
+                    <h3>Enter Custom Caffeine Product</h3>
+                    <input type="text" id="customName" placeholder="Product name" maxlength="20">
+                    <input type="number" id="customCaffeine" placeholder="Caffeine amount (mg)" min="0" max="1000">
+                    <div class="custom-form-buttons">
+                        <button class="btn-custom" id="addCustom">Add</button>
+                        <button class="btn-custom cancel" id="cancelCustom">Cancel</button>
+                    </div>
+                </div>
+
+                <div class="caffeine-modal-actions">
+                    <button class="btn btn-warning" id="cancelCaffeine">Cancel</button>
                 </div>
             </div>
         </div>
